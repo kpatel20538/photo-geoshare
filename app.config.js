@@ -4,8 +4,8 @@ const { parsed: extra } = dotenv.config();
 
 export default {
   expo: {
-    name: "image-geoshare",
-    slug: "image-geoshare",
+    name: "photo-geoshare",
+    slug: "photo-geoshare",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
