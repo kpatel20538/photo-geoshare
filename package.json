@@ -8,8 +8,16 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo/vector-icons": "^10.0.0",
+    "@turf/center": "^6.0.1",
+    "@turf/helpers": "^6.1.4",
+    "@turf/invariant": "^6.1.2",
+    "@turf/meta": "^6.0.2",
     "expo": "~38.0.8",
+    "expo-constants": "~9.1.1",
     "expo-status-bar": "^1.0.2",
+    "p-debounce": "^2.1.0",
+    "qs": "^6.9.4",
     "react": "~16.11.0",
     "react-dom": "~16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.2.tar.gz",
@@ -18,7 +26,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
-    "babel-preset-expo": "~8.1.0"
+    "babel-preset-expo": "~8.1.0",
+    "dotenv": "^8.2.0"
   },
   "private": true
 }
