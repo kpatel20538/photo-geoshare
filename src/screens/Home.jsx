@@ -1,27 +1,26 @@
 import React, { useState, useRef } from "react";
-import MapView, { Geojson } from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  KeyboardAvoidingView,
-} from "react-native";
+import { StyleSheet, View, Dimensions, TouchableOpacity } from "react-native";
 import { fetchGeoSearch } from "../api/location";
-import SearchBar from "../components/SearchBar";
+
+import { MaterialIcons } from "@expo/vector-icons";
+
 import { featureCollection } from "@turf/helpers";
 import { getCoord } from "@turf/invariant";
 import center from "@turf/center";
 
-const MapScreen = () => {
+import SearchBar from "../components/SearchBar";
+
+const Home = ({ navigation }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState(featureCollection([]));
   const [result, setResult] = useState(null);
   const mapRef = useRef();
 
   const setLocation = async (feature) => {
-    setResult(featureCollection([feature]));
     const [longitude, latitude] = getCoord(center(feature));
+    setResult({ longitude, latitude });
     const [
       longitudeStart = 0.25,
       latitudeStart = 0.25,
@@ -37,13 +36,16 @@ const MapScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={StyleSheet.absoluteFill}>
       <StatusBar style="auto" />
-      <KeyboardAvoidingView behavior="height">
-        <MapView ref={mapRef} style={styles.mapStyle}>
-          {result && <Geojson geojson={result} />}
-        </MapView>
-      </KeyboardAvoidingView>
+      <MapView ref={mapRef} style={styles.mapStyle}>
+        {result && (
+          <Marker
+            coordinate={result}
+            onPress={() => navigation.navigate("EditPhoto")}
+          />
+        )}
+      </MapView>
       <SearchBar
         value={query}
         onChangeText={async (query) => {
@@ -64,13 +66,23 @@ const MapScreen = () => {
         onPressSuggestion={setLocation}
         suggestions={suggestions.features}
       />
+      <TouchableOpacity
+        style={styles.fabContainer}
+        onPress={() => navigation.navigate("CreatePhoto")}
+      >
+        <MaterialIcons
+          name="camera-alt"
+          size={32}
+          color="white"
+          style={styles.fab}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
@@ -79,6 +91,26 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   },
+  fab: {
+    padding: 16,
+  },
+  fabContainer: {
+    backgroundColor: "slateblue",
+    borderRadius: Number.MAX_SAFE_INTEGER,
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    margin: 24,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+
+    elevation: 6,
+  },
 });
 
-export default MapScreen;
+export default Home;
