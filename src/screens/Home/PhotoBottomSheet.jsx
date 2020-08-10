@@ -11,17 +11,21 @@ const PanHandle = () => (
   </View>
 );
 
-const PhotoBottomSheet = ({ bottomSheetRef, onSettle, children }) => {
+const PhotoBottomSheet = ({
+  bottomSheetRef,
+  selection,
+  onSettle,
+  children,
+}) => {
   return (
     <ScrollBottomSheet
       ref={bottomSheetRef}
-      contentContainerStyle={styles.contentContainerStyle}
       componentType="ScrollView"
       snapPoints={[96, "50%", "100%"]}
       initialSnapIndex={2}
       topInset={Constants.statusBarHeight + headerHeight + 36}
       onSettle={onSettle}
-      renderHandle={() => <PanHandle />}
+      renderHandle={() => (selection ? <PanHandle /> : null)}
     >
       {children}
     </ScrollBottomSheet>
@@ -29,9 +33,7 @@ const PhotoBottomSheet = ({ bottomSheetRef, onSettle, children }) => {
 };
 
 const styles = StyleSheet.create({
-  contentContainerStyle: {
-    backgroundColor: "#F3F4F9",
-  },
+  
   header: {
     alignItems: "center",
     backgroundColor: "white",

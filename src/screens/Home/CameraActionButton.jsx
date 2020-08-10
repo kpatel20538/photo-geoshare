@@ -1,6 +1,7 @@
 import React from "react";
 import {  StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { shadow } from "../../styles";
 
 const CameraActionButton = ({onPress}) => {
   return (
@@ -20,21 +21,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   fabContainer: {
-    backgroundColor: "slateblue",
+    ...shadow,
+    backgroundColor: "tomato",
     borderRadius: Number.MAX_SAFE_INTEGER,
     position: "absolute",
     bottom: 0,
     right: 0,
     margin: 24,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
 
-    elevation: 6,
   },
 });
 

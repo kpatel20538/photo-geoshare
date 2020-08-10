@@ -29,8 +29,8 @@ export const fetchGeoReverse = pDebounce(
 export const getRegion = (geoFeature) => {
   const [longitude, latitude] = getCoord(center(geoFeature));
   const [
-    longitudeStart = 0.25,
-    latitudeStart = 0.25,
+    longitudeStart = 0.05,
+    latitudeStart = 0.05,
     longitudeEnd = 0,
     latitudeEnd = 0,
   ] = geoFeature.properties.extent || [];
@@ -51,5 +51,9 @@ export const getCurrentRegion = async () => {
   const {
     coords: { longitude, latitude },
   } = await Location.getCurrentPositionAsync();
-  return getRegion(point([longitude, latitude]));
+  
+  return {
+    region: getRegion(point([longitude, latitude])),
+    coordinate: { longitude, latitude },
+  };
 };

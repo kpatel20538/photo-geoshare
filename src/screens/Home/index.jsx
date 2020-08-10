@@ -50,6 +50,7 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     if (isSearching && isFocused) {
       inputRef.current.focus();
+      setSelection(null);
     } else {
       inputRef.current.blur();
     }
@@ -57,7 +58,7 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     const requestLocation = async () => {
-      const region = await getCurrentRegion();
+      const { region } = (await getCurrentRegion() )|| {};
       if (region && mapRef.current) {
         mapRef.current.animateToRegion(region);
       }
@@ -78,7 +79,7 @@ const Home = ({ navigation }) => {
       } else {
         bottomSheetRef.current.snapTo(2);
       }
-    }, 500);
+    }, 1);
     return () => clearTimeout(handle);
   }, [selection, bottomSheetRef]);
 
@@ -106,8 +107,7 @@ const Home = ({ navigation }) => {
   };
 
   const handeCameraAction = () => {
-    // navigation.navigate("CreatePhoto");
-    bottomSheetRef.current.snapTo(0);
+    navigation.navigate("CreatePhoto");
   };
 
   const handleClear = () => {
@@ -118,7 +118,11 @@ const Home = ({ navigation }) => {
 
   return (
     <ScreenLayout>
-      <PinMap mapRef={mapRef} results={results} onMarkerPress={handleMarker} />
+      <PinMap
+        mapRef={mapRef}
+        results={results}
+        onMarkerPress={handleMarker}
+      />
       <DarkLayer
         active={isSearching && isFocused}
         onPress={() => setIsSearching(false)}

@@ -21,6 +21,8 @@
     "expo-image-picker": "~8.3.0",
     "expo-location": "~8.2.1",
     "expo-status-bar": "^1.0.2",
+    "firebase": "7.9.0",
+    "ngeohash": "^0.6.3",
     "p-debounce": "^2.1.0",
     "qs": "^6.9.4",
     "react": "~16.11.0",

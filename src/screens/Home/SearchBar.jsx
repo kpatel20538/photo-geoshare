@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { shadow } from "../../styles";
 
 const getDisplayOsm = (value) =>
   value
@@ -113,23 +114,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   container: {
+    ...shadow,
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     backgroundColor: "white",
     borderRadius: 8,
-    margin: 24,
-
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-
-    elevation: 6,
+    margin: 24,    
   },
   suggestion: {
     paddingVertical: 8,

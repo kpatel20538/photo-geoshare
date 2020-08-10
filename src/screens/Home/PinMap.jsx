@@ -4,13 +4,15 @@ import { StyleSheet, Dimensions } from "react-native";
 
 const PinMap = ({ mapRef, results, onMarkerPress }) => {
   return (
-    <MapView ref={mapRef} style={styles.map}>
+    <MapView
+      ref={mapRef}
+      style={styles.map}
+      toolbarEnabled={false}
+    >
       {results.map((result) => (
         <Marker
           key={result.id}
           coordinate={result.coordinate}
-          title={"red"}
-          description={"blue"}
           onPress={() => onMarkerPress(result)}
         />
       ))}
@@ -20,7 +22,7 @@ const PinMap = ({ mapRef, results, onMarkerPress }) => {
 
 const styles = StyleSheet.create({
   map: {
-    height: Dimensions.get("window").height - 56,
+    flex: 1,
   },
 });
 
