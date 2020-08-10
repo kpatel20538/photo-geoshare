@@ -45,13 +45,13 @@ export const getRegion = (geoFeature) => {
 export const getCurrentRegion = async () => {
   const { granted } = await Location.requestPermissionsAsync();
   if (!granted) {
-    return null;
+    throw new Error("Location Permission Denied");
   }
 
   const {
     coords: { longitude, latitude },
-  } = await Location.getCurrentPositionAsync();
-  
+  } = await Location.getLastKnownPositionAsync();
+
   return {
     region: getRegion(point([longitude, latitude])),
     coordinate: { longitude, latitude },

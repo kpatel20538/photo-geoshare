@@ -1,63 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { View, Text, StyleSheet, TextInput, Image, Button } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import { shadow } from "../../styles";
 import { ScrollView } from "react-native-gesture-handler";
 import MapInput from "./MapInput";
-import {  getCurrentRegion } from "../../api/location";
+import { suppress } from "../../helpers";
+import { getCurrentRegion } from "../../api/location";
+import { pickFromCamera, pickFromImageLibrary } from "../../api/image";
+import { StoreContext } from "../../Store";
+import { nanoid } from "nanoid/non-secure";
 
-const CreatePhoto = () => {
+const CreatePhoto = ({ navigation }) => {
   const mapRef = useRef();
   const [title, setTitle] = useState("");
-  const [uri, setUri] = useState("");
+  const [uri, setUri] = useState(null);
   const [coordinate, setCoordinate] = useState({ latitude: 0, longitude: 0 });
+  const { createPost } = useContext(StoreContext);
 
   useEffect(() => {
-    const requestLocation = async () => {
-      const { region, coordinate } = (await getCurrentRegion()) || {};
-      if (region && mapRef.current) {
-        setCoordinate(coordinate);
-        mapRef.current.animateToRegion(region);
-      }
-    };
+    const requestLocation = suppress(async () => {
+      const { region, coordinate } = await getCurrentRegion();
+      setCoordinate(coordinate);
+      mapRef.current.animateToRegion(region);
+    });
     requestLocation();
   }, [mapRef]);
-
-  const pickFromImageLibrary = async () => {
-    const { granted } = await ImagePicker.requestCameraRollPermissionsAsync();
-    if (!granted) {
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      quality: 1,
-      exif: true,
-    });
-
-    if (!result.cancelled) {
-      setUri(result.uri);
-    }
-  };
-
-  const pickFromCamera = async () => {
-    const { granted } = await ImagePicker.requestCameraPermissionsAsync();
-    if (!granted) {
-      return;
-    }
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      quality: 1,
-      exif: true,
-    });
-
-    if (!result.cancelled) {
-      setUri(result.uri);
-    }
-  };
-
   return (
     <ScrollView>
       <View style={styles.inputContainer}>
@@ -84,7 +51,10 @@ const CreatePhoto = () => {
           size={32}
           color="white"
           backgroundColor="tomato"
-          onPress={pickFromCamera}
+          onPress={suppress(async () => {
+            const { uri } = await pickFromCamera();
+            setUri(uri);
+          })}
         >
           Take Photo
         </MaterialIcons.Button>
@@ -93,7 +63,11 @@ const CreatePhoto = () => {
           size={32}
           color="white"
           backgroundColor="tomato"
-          onPress={pickFromImageLibrary}
+          onPress={suppress(async () => {
+            const { uri } = await pickFromImageLibrary();
+            console.log(uri);
+            setUri(uri);
+          })}
         >
           From Gallery
         </MaterialIcons.Button>
@@ -110,8 +84,11 @@ const CreatePhoto = () => {
         <Button
           color="tomato"
           title="Post"
-          disabled={!uri}
-          onPress={() => {}}
+          disabled={uri === null}
+          onPress={() => {
+            createPost({ title, uri, coordinate, id: nanoid() });
+            navigation.goBack();
+          }}
         />
       </View>
     </ScrollView>

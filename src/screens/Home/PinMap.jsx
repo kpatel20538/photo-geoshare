@@ -12,6 +12,7 @@ const PinMap = ({ mapRef, results, onMarkerPress }) => {
       {results.map((result) => (
         <Marker
           key={result.id}
+          title={result.title}
           coordinate={result.coordinate}
           onPress={() => onMarkerPress(result)}
         />

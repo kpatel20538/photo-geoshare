@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import ScreenLayout from "./ScreenLayout";
 import PinMap from "./PinMap";
@@ -13,6 +13,8 @@ import {
   fetchGeoSearch,
 } from "../../api/location";
 import { Keyboard } from "react-native";
+import { suppress } from "../../helpers";
+import { StoreContext } from "../../Store";
 
 const Home = ({ navigation }) => {
   const mapRef = useRef();
@@ -21,28 +23,7 @@ const Home = ({ navigation }) => {
 
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [results, setResults] = useState([
-    {
-      id: "700",
-      coordinate: { latitude: 33.018079, longitude: -96.496097 },
-      uri: "https://picsum.photos/id/700/300/200",
-    },
-    {
-      id: "701",
-      coordinate: { latitude: 33.016331, longitude: -96.501219 },
-      uri: "https://picsum.photos/id/701/300/200",
-    },
-    {
-      id: "702",
-      coordinate: { latitude: 33.012358, longitude: -96.496647 },
-      uri: "https://picsum.photos/id/702/300/200",
-    },
-    {
-      id: "703",
-      coordinate: { latitude: 33.022768, longitude: -96.495747 },
-      uri: "https://picsum.photos/id/703/300/200",
-    },
-  ]);
+  const {results} = useContext(StoreContext)
   const [selection, setSelection] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const isFocused = useIsFocused();
@@ -57,12 +38,10 @@ const Home = ({ navigation }) => {
   }, [isSearching, isFocused, inputRef]);
 
   useEffect(() => {
-    const requestLocation = async () => {
-      const { region } = (await getCurrentRegion() )|| {};
-      if (region && mapRef.current) {
-        mapRef.current.animateToRegion(region);
-      }
-    };
+    const requestLocation = suppress(async () => {
+      const { region } = await getCurrentRegion();
+      mapRef.current.animateToRegion(region);
+    });
     requestLocation();
   }, [mapRef]);
 
