@@ -23,7 +23,7 @@ const Home = ({ navigation }) => {
 
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const {results} = useContext(StoreContext)
+  const { results } = useContext(StoreContext);
   const [selection, setSelection] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const isFocused = useIsFocused();
@@ -81,14 +81,6 @@ const Home = ({ navigation }) => {
     }
   };
 
-  const handleMarker = (result) => {
-    setSelection(result);
-  };
-
-  const handeCameraAction = () => {
-    navigation.navigate("CreatePhoto");
-  };
-
   const handleClear = () => {
     setQuery("");
     setSuggestions([]);
@@ -97,11 +89,7 @@ const Home = ({ navigation }) => {
 
   return (
     <ScreenLayout>
-      <PinMap
-        mapRef={mapRef}
-        results={results}
-        onMarkerPress={handleMarker}
-      />
+      <PinMap mapRef={mapRef} results={results} onMarkerPress={setSelection} />
       <DarkLayer
         active={isSearching && isFocused}
         onPress={() => setIsSearching(false)}
@@ -120,7 +108,7 @@ const Home = ({ navigation }) => {
       <PhotoBottomSheet bottomSheetRef={bottomSheetRef} selection={selection}>
         <ImageDetails selection={selection} />
       </PhotoBottomSheet>
-      <CameraActionButton onPress={handeCameraAction} />
+      <CameraActionButton onPress={() => navigation.navigate("CreatePhoto")} />
     </ScreenLayout>
   );
 };
