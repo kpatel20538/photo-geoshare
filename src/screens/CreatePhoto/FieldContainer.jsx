@@ -16,7 +16,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 6,
   },
   container: {
     margin: 16,

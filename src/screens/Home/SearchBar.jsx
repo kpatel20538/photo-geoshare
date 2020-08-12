@@ -1,11 +1,10 @@
 import React from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import {
-  StyleSheet,
-  View,
   TextInput,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+  BorderlessButton,
+  RectButton,
+} from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { shadow } from "../../styles";
 
@@ -17,35 +16,17 @@ const getDisplayOsm = (value) =>
     )
     .join(" ");
 
-const ClearButton = ({ onPress }) => {
+const AddonButton = ({ icon, onPress }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <MaterialIcons
-        style={styles.addon}
-        name="clear"
-        size={24}
-        color="silver"
-      />
-    </TouchableOpacity>
+    <BorderlessButton style={styles.addon} onPress={onPress}>
+      <MaterialIcons name={icon} size={24} color="silver" />
+    </BorderlessButton>
   );
-};
-
-const SearchButton = ({ onPress }) => {
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <MaterialIcons
-        style={styles.addon}
-        name="search"
-        size={24}
-        color="silver"
-      />
-    </TouchableOpacity>
-  );
-};
+}
 
 const Suggestion = ({ title, subtitle, onPress }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <RectButton onPress={onPress}>
       <View style={styles.suggestion}>
         <Text style={styles.suggestionTitle} numberOfLines={1}>
           {title}
@@ -54,7 +35,7 @@ const Suggestion = ({ title, subtitle, onPress }) => {
           {subtitle}
         </Text>
       </View>
-    </TouchableOpacity>
+    </RectButton>
   );
 };
 
@@ -82,8 +63,8 @@ const SearchBar = ({
             onChangeText={onChangeText}
             onSubmitEditing={onSubmitEditing}
           />
-          <ClearButton onPress={onClear} />
-          <SearchButton onPress={onSubmitEditing} />
+          <AddonButton icon="clear" onPress={onClear} />
+          <AddonButton icon="search" onPress={onSubmitEditing} />
         </View>
         {isSearching &&
           suggestions.map((feature) => (
@@ -121,14 +102,14 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "white",
     borderRadius: 8,
-    margin: 24,    
+    margin: 24,
   },
   suggestion: {
-    paddingVertical: 8,
     borderTopColor: "gainsboro",
-    marginHorizontal: 16,
-
+    borderStyle: "solid",
     borderTopWidth: 1,
+    paddingVertical: 8,
+    marginHorizontal: 16,
   },
   suggestionTitle: {
     fontWeight: "bold",

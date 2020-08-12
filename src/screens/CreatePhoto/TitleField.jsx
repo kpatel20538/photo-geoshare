@@ -21,9 +21,9 @@ export default TitleField;
 
 const styles = StyleSheet.create({
   input: {
-    ...shadow,
-    borderRadius: 4,
+    height: 36,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    borderBottomColor: "tomato",
+    borderBottomWidth: 1,
   },
 });

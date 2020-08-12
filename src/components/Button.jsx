@@ -11,7 +11,7 @@ const Button = ({
   icon,
   rounded,
   iconSet: Icons = MaterialIcons,
-  style
+  style,
 }) => {
   return (
     <RectButton
