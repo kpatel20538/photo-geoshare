@@ -167,7 +167,13 @@ const Home = ({ navigation }) => {
         onSubmitEditing={() => handleSuggestion(suggestions[0])}
         onSuggestionPress={handleSuggestion}
       />
-      <PhotoBottomSheet bottomSheetRef={bottomSheetRef} selection={selection}>
+      <PhotoBottomSheet bottomSheetRef={bottomSheetRef} selection={selection} onSettle={() => {
+        if (selection === null) {
+          setTimeout(() => {
+            bottomSheetRef.current.snapTo(2);
+          }, 1);
+        }
+      }}>
         <ImageDetails selection={selection} />
       </PhotoBottomSheet>
       <CameraActionButton onPress={() => navigation.navigate("CreatePhoto")} />

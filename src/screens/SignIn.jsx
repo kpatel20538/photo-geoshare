@@ -6,7 +6,7 @@ import { TextInput } from "react-native-gesture-handler";
 import Button from "../components/Button";
 
 const SignIn = ({ navigation }) => {
-  const { firebase, user } = useContext(FirebaseContext);
+  const { firebase } = useContext(FirebaseContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,17 +18,12 @@ const SignIn = ({ navigation }) => {
       setLoading(true);
       await firebase.auth()
         .signInWithEmailAndPassword(email, password);
-      navigation.replace("Home");
     } catch (error) {
       Alert.alert(error.code, error.message);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    user && navigation.replace("Home");
-  }, [user])
 
   return (
     <ScrollView>

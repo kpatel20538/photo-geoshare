@@ -20,15 +20,17 @@ const Navigator = () => {
         },
         headerTintColor: "white",
       }}
+      initialRoute={user === null ? "SignIn" : "Home"}
     >
+
+      <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{ title: "GeoSearch" }}
+      />
       {user ?
         (
           <>
-            <Stack.Screen
-              name="Home"
-              component={Home}
-              options={{ title: "GeoSearch" }}
-            />
             <Stack.Screen
               name="CreatePhoto"
               component={CreatePhoto}
@@ -60,6 +62,7 @@ const Navigator = () => {
           </>
         )
       }
+
     </Stack.Navigator>
   );
 }

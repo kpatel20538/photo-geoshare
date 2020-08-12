@@ -8,7 +8,7 @@ import { BorderlessButton, RectButton } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const ScreenLayout = ({ children }) => {
-  const { firebase } = useContext(FirebaseContext);
+  const { firebase, user } = useContext(FirebaseContext);
   const ref = useRef();
   const navigation = useNavigation();
   navigation.setOptions({
@@ -28,9 +28,16 @@ const ScreenLayout = ({ children }) => {
       renderNavigationView={() => {
         return (
           <View style={styles.page}>
-            <RectButton style={styles.rectButton} onPress={() => firebase.auth().signOut()}>
+            {user ? <RectButton style={styles.rectButton} onPress={async () => {
+              await firebase.auth().signOut();
+              navigation.replace("SignIn")
+            }}>
               <Text style={styles.rectText}>Sign Out</Text>
-            </RectButton>
+            </RectButton> : <RectButton
+              style={styles.rectButton}
+              onPress={() => { navigation.replace("SignIn") }}>
+                <Text style={styles.rectText}>Sign In</Text>
+              </RectButton>}
           </View>
         )
       }}
