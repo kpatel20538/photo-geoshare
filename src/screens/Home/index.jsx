@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
+import React, { useRef, useState, useEffect, useContext, useMemo } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import ScreenLayout from "./ScreenLayout";
 import PinMap from "./PinMap";
@@ -11,22 +11,79 @@ import {
   getRegion,
   getCurrentRegion,
   fetchGeoSearch,
+  getGeohashRegion,
 } from "../../api/location";
 import { Keyboard } from "react-native";
 import { suppress } from "../../helpers";
-import { StoreContext } from "../../Store";
+import { FirebaseContext } from "../../Firebase";
+
+const useGeoCollection = (region) => {
+  const { db } = useContext(FirebaseContext);
+  const geohashes = getGeohashRegion(region);
+  const subscriptions = useRef({});
+  const [data, setData] = useState({});
+  const [error, setError] = useState(null);
+
+  useEffect(() => () => {
+    for (const unsubscribe of Object.values(subscriptions.current)) {
+      unsubscribe();
+    }
+  }, []);
+
+  useEffect(() => {
+    const newHashes = new Set(geohashes);
+    const remainingKeys = new Set(Object.keys(subscriptions.current));
+    for (const oldHash of Object.keys(subscriptions.current)) {
+      if (!newHashes.has(oldHash)) {
+        remainingKeys.delete(oldHash);
+        subscriptions.current[oldHash]();
+        delete subscriptions.current[oldHash];
+      }
+    }
+    setData(data => {
+      const nextData = {};
+      for (const key of remainingKeys) {
+        nextData[key] = data[key];
+      }
+      return nextData;
+    });
+
+    for (const newHash of geohashes) {
+      if (!remainingKeys.has(newHash)) {
+        subscriptions.current[newHash] = db.collection('posts')
+          .where("location.geohash", ">=", newHash)
+          .where("location.geohash", "<", newHash + "~")
+          .limit(100)
+          .onSnapshot({
+            next: snapshot => setData(data => ({
+              ...data,
+              [newHash]: snapshot.docs.map(doc => ({
+                id: doc.id,
+                data: doc.data()
+              }))
+            })),
+            error: setError
+          })
+      }
+    }
+
+  }, [geohashes[0]]);
+  return [data, error];
+}
 
 const Home = ({ navigation }) => {
   const mapRef = useRef();
   const inputRef = useRef();
   const bottomSheetRef = useRef();
+  const [region, setRegion] = useState(null);
 
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const { results } = useContext(StoreContext);
   const [selection, setSelection] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const isFocused = useIsFocused();
+
+  const [data, error] = useGeoCollection(region);
 
   useEffect(() => {
     if (isSearching && isFocused) {
@@ -76,7 +133,6 @@ const Home = ({ navigation }) => {
   const handleSuggestion = (geoFeature) => {
     if (geoFeature) {
       mapRef.current.animateToRegion(getRegion(geoFeature));
-      // setResults
       setIsSearching(false);
     }
   };
@@ -89,7 +145,13 @@ const Home = ({ navigation }) => {
 
   return (
     <ScreenLayout>
-      <PinMap mapRef={mapRef} results={results} onMarkerPress={setSelection} />
+      <PinMap
+        mapRef={mapRef}
+        data={data}
+        region={region}
+        onMarkerPress={setSelection}
+        onRegionChangeComplete={setRegion}
+      />
       <DarkLayer
         active={isSearching && isFocused}
         onPress={() => setIsSearching(false)}

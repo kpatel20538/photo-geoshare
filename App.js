@@ -7,13 +7,13 @@ import Home from "./src/screens/Home";
 import CreatePhoto from "./src/screens/CreatePhoto";
 import MyPhotos from "./src/screens/MyPhotos";
 import EditPhoto from "./src/screens/EditPhoto";
-import StoreProvider from "./src/Store";
+import FirebaseProvider from "./src/Firebase";
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
-    <StoreProvider>
+    <FirebaseProvider>
       <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator
@@ -46,7 +46,7 @@ const App = () => {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </StoreProvider>
+    </FirebaseProvider>
   );
 };
 export default App;

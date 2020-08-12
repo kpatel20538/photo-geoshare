@@ -1,6 +1,4 @@
-import dotenv from "dotenv";
-
-const { parsed: extra } = dotenv.config();
+import fs from 'fs';
 
 export default {
   expo: {
@@ -24,6 +22,6 @@ export default {
     web: {
       favicon: "./assets/favicon.png",
     },
-    extra,
+    extra: JSON.parse(fs.readFileSync("./extra.json", { encoding: 'utf-8' })),
   },
 };

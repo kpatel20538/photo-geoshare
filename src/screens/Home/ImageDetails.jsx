@@ -8,7 +8,7 @@ const ImageDetails = ({ selection }) => {
       {selection && (
         <>
           <Image
-            source={{ uri: selection.uri }}
+            source={{ uri: selection.data.uri }}
             style={{ aspectRatio: 300 / 200 }}
           />
           <Text>

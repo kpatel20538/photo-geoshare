@@ -13,4 +13,4 @@ web-build/
 .DS_Store
 
 # custom
-.env
+extra.json

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { ScrollView } from "react-native";
 import { nanoid } from "nanoid/non-secure";
-import { StoreContext } from "../../Store";
+import { FirebaseContext } from "../../Firebase";
 import { suppress } from "../../helpers";
 import { getCurrentRegion } from "../../api/location";
 import { pickFromCamera, pickFromImageLibrary } from "../../api/image";
@@ -13,7 +13,7 @@ import SubmitButton from "./SubmitButton";
 import TitleField from "./TitleField";
 
 const CreatePhoto = ({ navigation }) => {
-  const { createPost } = useContext(StoreContext);
+  const { db } = useContext(FirebaseContext);
   const mapRef = useRef();
   const [title, setTitle] = useState("");
   const [uri, setUri] = useState(null);
