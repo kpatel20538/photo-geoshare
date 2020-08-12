@@ -1,5 +1,5 @@
 import React from "react";
-import FieldContainer from "./FieldContainer";
+import FieldContainer from "../../components/FieldContainer";
 import Button from "../../components/Button";
 
 const SubmitButton = ({ enabled, onPress }) => {

@@ -1,8 +1,7 @@
 import React from "react";
-import { StyleSheet} from "react-native";
+import { StyleSheet } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-import FieldContainer from "./FieldContainer";
-import { shadow } from "../../styles";
+import FieldContainer from "../../components/FieldContainer";
 
 const TitleField = ({ title, onTitleChange }) => {
   return (

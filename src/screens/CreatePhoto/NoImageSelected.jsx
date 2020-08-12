@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import FieldContainer from './FieldContainer';
+import FieldContainer from "../../components/FieldContainer";
 
 const NoImageSelected = () => {
   return (

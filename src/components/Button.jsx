@@ -1,11 +1,12 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, ActivityIndicator } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { shadow } from "../styles";
 
 const Button = ({
   enabled = true,
+  loading,
   onPress,
   title,
   icon,
@@ -20,17 +21,22 @@ const Button = ({
         rounded ? styles.rounded : styles.block,
         style,
       ]}
-      enabled={enabled}
+      enabled={enabled && !loading}
       onPress={onPress}
     >
-      {icon && (
-        <Icons name={icon} size={32} color={enabled ? "white" : "gray"} />
+      {loading ? <ActivityIndicator color="white" /> : (
+        <>
+          {icon && (
+            <Icons name={icon} size={32} color={enabled ? "white" : "gray"} />
+          )}
+          {title && (
+            <Text style={enabled ? styles.title : styles.disabledTitle}>
+              {title}
+            </Text>
+          )}
+        </>
       )}
-      {title && (
-        <Text style={enabled ? styles.title : styles.disabledTitle}>
-          {title}
-        </Text>
-      )}
+
     </RectButton>
   );
 };

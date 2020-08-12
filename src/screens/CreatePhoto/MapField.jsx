@@ -2,7 +2,7 @@ import React from "react";
 import MapView, { Marker } from "react-native-maps";
 import { StyleSheet, View } from "react-native";
 import { shadow, map } from "../../styles";
-import FieldContainer from "./FieldContainer";
+import FieldContainer from "../../components/FieldContainer";
 import {bboxes} from "ngeohash";
 
 const MapField = ({ mapRef, coordinate, onCoordinateChange }) => {
