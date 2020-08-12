@@ -11,6 +11,7 @@ export const pickFromImageLibrary = async () => {
     allowsEditing: true,
     quality: 1,
     exif: true,
+    base64: true,
   });
   if (result.cancelled) {
     throw new Error("Image Library Picking Canceled");
@@ -30,6 +31,7 @@ export const pickFromCamera = async () => {
     allowsEditing: true,
     quality: 1,
     exif: true,
+    base64: true,
   });
   if (result.cancelled) {
     throw new Error("Camera Picking Canceled");

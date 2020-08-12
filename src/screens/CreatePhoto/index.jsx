@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Alert } from "react-native";
 import { nanoid } from "nanoid/non-secure";
 import { FirebaseContext } from "../../Firebase";
 import { suppress } from "../../helpers";
@@ -11,15 +11,17 @@ import MapField from "./MapField";
 import NoImageSelected from "./NoImageSelected";
 import SubmitButton from "./SubmitButton";
 import TitleField from "./TitleField";
+import { encode } from "ngeohash";
 
 const CreatePhoto = ({ navigation }) => {
-  const { db } = useContext(FirebaseContext);
+  const { db, storage } = useContext(FirebaseContext);
   const mapRef = useRef();
   const [title, setTitle] = useState("");
   const [uri, setUri] = useState(null);
   const [coordinate, setCoordinate] = useState({ latitude: 0, longitude: 0 });
+  const [loading, setLoading] = useState(false);
 
-  const canSubmit = uri !== null;
+  const canSubmit = uri !== null && title.length > 0;
 
   const requestUserLocation = suppress(async () => {
     const { region, coordinate } = await getCurrentRegion();
@@ -37,9 +39,31 @@ const CreatePhoto = ({ navigation }) => {
     setUri(uri);
   });
 
-  const handleSubmit = () => {
-    createPost({ title, uri, coordinate, id: nanoid() });
-    navigation.goBack();
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const storageRef = storage.ref(`photos/${nanoid()}`);
+      await storageRef.put(blob);
+      await blob.close();
+      
+      await db.collection("posts").add({
+        title,
+        uri: await storageRef.getDownloadURL(),
+        location: {
+          coordinate,
+          geohash: encode(coordinate.latitude, coordinate.longitude, 12)
+        }
+      })
+      navigation.goBack();
+    } catch (error) {
+      console.error(error);
+      Alert.alert(error.code, error.message);
+    } finally {
+      setLoading(false)
+    }
+
   };
 
   useEffect(() => {
@@ -59,7 +83,7 @@ const CreatePhoto = ({ navigation }) => {
         coordinate={coordinate}
         onCoordinateChange={setCoordinate}
       />
-      <SubmitButton enabled={canSubmit} onPress={handleSubmit} />
+      <SubmitButton enabled={canSubmit} loading={loading} onPress={handleSubmit} />
     </ScrollView>
   );
 };
