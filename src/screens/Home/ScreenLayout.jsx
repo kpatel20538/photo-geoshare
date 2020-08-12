@@ -1,23 +1,36 @@
 import React, { useContext, useRef } from "react";
 import DrawerLayout from "react-native-gesture-handler/DrawerLayout";
 import { View, StyleSheet, Text } from "react-native";
-import Button from "../../components/Button";
 import { FirebaseContext } from "../../Firebase";
 import { useNavigation } from "@react-navigation/native";
 import { BorderlessButton, RectButton } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const ScreenLayout = ({ children }) => {
-  const { firebase, user } = useContext(FirebaseContext);
+const MenuButton = ({ title, onPress }) => (
+  <RectButton
+    style={styles.rectButton}
+    onPress={onPress}
+  >
+    <Text style={styles.rectText}>{title}</Text>
+  </RectButton>
+);
+
+const MenuHeaderButton = ({ onPress }) => (
+  <BorderlessButton
+    style={styles.headerIcon}
+    onPress={onPress}
+  >
+    <MaterialIcons name="menu" size={24} color="white" />
+  </BorderlessButton>
+)
+
+const ScreenLayout = ({ children, debugMode, onDebugMode }) => {
+  const { auth, user } = useContext(FirebaseContext);
   const ref = useRef();
   const navigation = useNavigation();
   navigation.setOptions({
-    headerRight: () => (
-      <BorderlessButton onPress={() => ref.current.openDrawer()} style={{ marginHorizontal: 24 }}>
-        <MaterialIcons name="menu" size={24} color="white" />
-      </BorderlessButton>
-    )
-  })
+    headerRight: () => <MenuHeaderButton onPress={() => ref.current.openDrawer()} />
+  });
 
   return (
     <DrawerLayout
@@ -28,16 +41,24 @@ const ScreenLayout = ({ children }) => {
       renderNavigationView={() => {
         return (
           <View style={styles.page}>
-            {user ? <RectButton style={styles.rectButton} onPress={async () => {
-              await firebase.auth().signOut();
-              navigation.replace("SignIn")
-            }}>
-              <Text style={styles.rectText}>Sign Out</Text>
-            </RectButton> : <RectButton
-              style={styles.rectButton}
-              onPress={() => { navigation.replace("SignIn") }}>
-                <Text style={styles.rectText}>Sign In</Text>
-              </RectButton>}
+            {user ? (
+              <MenuButton
+                title="Sign Out"
+                onPress={async () => {
+                  await auth.signOut();
+                  navigation.replace("SignIn")
+                }}
+              />
+            ) : (
+                <MenuButton
+                  title="Sign In"
+                  onPress={() => { navigation.replace("SignIn") }}
+                />
+              )}
+            <MenuButton
+              title="Toggle Debug Mode"
+              onPress={() => { onDebugMode(!debugMode) }}
+            />
           </View>
         )
       }}
@@ -66,6 +87,9 @@ const styles = StyleSheet.create({
   },
   rectText: {
     fontWeight: 'bold',
+  },
+  headerIcon: {
+    marginHorizontal: 24
   }
 });
 

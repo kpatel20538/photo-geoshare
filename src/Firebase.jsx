@@ -12,8 +12,9 @@ YellowBox.ignoreWarnings(['Setting a timer']);
 export const FirebaseContext = createContext();
 
 const FirebaseProvider = ({ children }) => {
-  const [db] = useState(() => firebase.firestore(), [firebase])
-  const [storage] = useState(() => firebase.storage(), [firebase])
+  const [db] = useState(() => firebase.firestore(), [firebase]);
+  const [storage] = useState(() => firebase.storage(), [firebase]);
+  const [auth] = useState(() => firebase.auth(), [auth]);
   const [user, setUser] = useState(null);
 
   useEffect(() => firebase.auth().onAuthStateChanged(setUser));
@@ -24,6 +25,7 @@ const FirebaseProvider = ({ children }) => {
         firebase,
         db,
         storage,
+        auth,
         user,
       }}
     >

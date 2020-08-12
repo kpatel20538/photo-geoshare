@@ -1,5 +1,5 @@
 import * as Location from "expo-location";
-import pDebounce from "p-debounce";
+import debounce from "debounce";
 import qs from "qs";
 import { featureCollection, point } from "@turf/helpers";
 import { getCoord } from "@turf/invariant";
@@ -8,25 +8,24 @@ import { encode, neighbors, decode_bbox } from "ngeohash";
 import bboxPolygon from "@turf/bbox-polygon";
 import memoize from 'memoize-one';
 
-export const fetchGeoSearch = pDebounce(async (options) => {
+export const fetchGeoSearch = debounce(async (options, {onNext}) => {
   if (!options.q || options.q.length < 4) {
     return featureCollection([]);
   }
   const response = await fetch(
     `https://photon.komoot.de/api?${qs.stringify(options)}`
   );
-  return response.json();
+  return onNext(await response.json());
 }, 250);
 
-export const fetchGeoReverse = pDebounce(
-  async (options) => {
+export const fetchGeoReverse = debounce(
+  async (options, {onNext}) => {
     const response = await fetch(
       `https://photon.komoot.de/reverse?${qs.stringify(options)}`
     );
-    return response.json();
+    return onNext(await response.json());
   },
   250,
-  { leading: true }
 );
 
 export const getRegion = (geoFeature) => {

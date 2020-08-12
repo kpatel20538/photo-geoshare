@@ -1,5 +1,5 @@
-import React, { useImperativeHandle, forwardRef, useRef } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 import ScrollBottomSheet from "react-native-scroll-bottom-sheet";
 import Constants from "expo-constants";
 
@@ -26,6 +26,7 @@ const PhotoBottomSheet = ({
       topInset={Constants.statusBarHeight + headerHeight + 36}
       onSettle={onSettle}
       renderHandle={() => (selection ? <PanHandle /> : null)}
+      style={selection === null && {display: "none"}}
     >
       {children}
     </ScrollBottomSheet>

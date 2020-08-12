@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import MapView, { Marker, Geojson } from "react-native-maps";
 import { StyleSheet } from "react-native";
 import { map } from "../../styles";
 import { getGeohashRegion, getGeohashFeature } from "../../api/location";
 
-const PinMap = ({ mapRef, data, region, onMarkerPress, onRegionChangeComplete }) => {
+const PinMap = ({ mapRef, data, region, debugMode, onMarkerPress, onRegionChangeComplete }) => {
   return (
     <MapView
       ref={mapRef}
@@ -21,7 +21,7 @@ const PinMap = ({ mapRef, data, region, onMarkerPress, onRegionChangeComplete })
           onPress={() => onMarkerPress(doc)}
         />
       )))}
-      {region && (
+      {debugMode && region && (
         <Geojson 
           geojson={getGeohashFeature(getGeohashRegion(region))} 
           strokeColor="crimson" 

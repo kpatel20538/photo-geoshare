@@ -16,6 +16,7 @@ import {
 import { Keyboard } from "react-native";
 import { suppress } from "../../helpers";
 import { FirebaseContext } from "../../Firebase";
+import { getPostsWithinGeohash } from "../../api/backend";
 
 const useGeoCollection = (region) => {
   const { db } = useContext(FirebaseContext);
@@ -50,20 +51,10 @@ const useGeoCollection = (region) => {
 
     for (const newHash of geohashes) {
       if (!remainingKeys.has(newHash)) {
-        subscriptions.current[newHash] = db.collection('posts')
-          .where("location.geohash", ">=", newHash)
-          .where("location.geohash", "<", newHash + "~")
-          .limit(100)
-          .onSnapshot({
-            next: snapshot => setData(data => ({
-              ...data,
-              [newHash]: snapshot.docs.map(doc => ({
-                id: doc.id,
-                data: doc.data()
-              }))
-            })),
-            error: setError
-          })
+        getPostsWithinGeohash(db, newHash, {
+          onNext: section => setData(data => ({ ...data, [newHash]: section })),
+          onError: setError
+        });
       }
     }
 
@@ -75,15 +66,16 @@ const Home = ({ navigation }) => {
   const mapRef = useRef();
   const inputRef = useRef();
   const bottomSheetRef = useRef();
-  const [region, setRegion] = useState(null);
 
+  const [debugMode, setDebugMode] = useState(false);
+  const [region, setRegion] = useState(null);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selection, setSelection] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const isFocused = useIsFocused();
 
-  const [data, error] = useGeoCollection(region);
+  const [data] = useGeoCollection(region);
 
   useEffect(() => {
     if (isSearching && isFocused) {
@@ -122,12 +114,13 @@ const Home = ({ navigation }) => {
   const handleQueryChange = async (text) => {
     setQuery(text);
     const { center } = await mapRef.current.getCamera();
-    const geoCollection = await fetchGeoSearch({
+    await fetchGeoSearch({
       q: text,
       lat: center.latitude,
       lon: center.longitude,
+    }, { 
+      onNext: geoCollection => setSuggestions(geoCollection.features || []) 
     });
-    setSuggestions(geoCollection.features || []);
   };
 
   const handleSuggestion = (geoFeature) => {
@@ -144,10 +137,11 @@ const Home = ({ navigation }) => {
   };
 
   return (
-    <ScreenLayout>
+    <ScreenLayout debugMode={debugMode} onDebugMode={setDebugMode}>
       <PinMap
         mapRef={mapRef}
         data={data}
+        debugMode={debugMode}
         region={region}
         onMarkerPress={setSelection}
         onRegionChangeComplete={setRegion}
@@ -170,7 +164,9 @@ const Home = ({ navigation }) => {
       <PhotoBottomSheet bottomSheetRef={bottomSheetRef} selection={selection}>
         <ImageDetails selection={selection} />
       </PhotoBottomSheet>
-      <CameraActionButton onPress={() => navigation.navigate("CreatePhoto")} />
+      <CameraActionButton
+        onPress={() => navigation.navigate("CreatePhoto")}
+      />
     </ScreenLayout>
   );
 };

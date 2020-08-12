@@ -1,12 +1,17 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import { StyleSheet } from "react-native";
 import Button from "../../components/Button";
 import { FirebaseContext } from "../../Firebase";
 
-const CameraActionButton = ({ onPress }) =>{
+const CameraActionButton = ({ onPress }) => {
   const { user } = useContext(FirebaseContext);
 
-  return <Button style={styles.fab} icon="camera-alt" enabled={user !== null} onPress={onPress} />;
+  return <Button
+    style={styles.fab}
+    icon="camera-alt"
+    enabled={user !== null}
+    onPress={onPress}
+  />;
 };
 
 const styles = StyleSheet.create({

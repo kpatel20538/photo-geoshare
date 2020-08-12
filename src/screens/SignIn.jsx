@@ -1,29 +1,21 @@
-import React, { useState, useEffect, useContext } from "react";
-import { ScrollView, Alert, StyleSheet } from "react-native";
+import React, { useState, useContext } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 import { FirebaseContext } from "../Firebase";
 import FieldContainer from "../components/FieldContainer";
 import { TextInput } from "react-native-gesture-handler";
 import Button from "../components/Button";
+import { useAsyncCallback } from "../helpers";
 
 const SignIn = ({ navigation }) => {
-  const { firebase } = useContext(FirebaseContext);
+  const { auth } = useContext(FirebaseContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const canSubmit = email.length > 0 && password.length > 0;
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      await firebase.auth()
-        .signInWithEmailAndPassword(email, password);
-    } catch (error) {
-      Alert.alert(error.code, error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [handleSubmit, loading] = useAsyncCallback(() => (
+    auth.signInWithEmailAndPassword(email, password)
+  ));
 
   return (
     <ScrollView>
@@ -56,10 +48,16 @@ const SignIn = ({ navigation }) => {
         />
       </FieldContainer>
       <FieldContainer>
-        <Button title="Sign Up" onPress={() => navigation.navigate("SignUp")} />
+        <Button
+          title="Sign Up"
+          onPress={() => navigation.navigate("SignUp")}
+        />
       </FieldContainer>
       <FieldContainer>
-        <Button title="Skip" onPress={() => navigation.replace("Home")} />
+        <Button
+          title="Skip"
+          onPress={() => navigation.replace("Home")}
+        />
       </FieldContainer>
     </ScrollView>
   );

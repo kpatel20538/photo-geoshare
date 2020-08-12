@@ -1,30 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
-import { ScrollView, Alert, StyleSheet } from "react-native";
+import React, { useState, useContext } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 import { FirebaseContext } from "../Firebase";
 import FieldContainer from "../components/FieldContainer";
 import { TextInput } from "react-native-gesture-handler";
 import Button from "../components/Button";
+import { useAsyncCallback } from "../helpers";
 
 const SignUp = () => {
-  const { firebase } = useContext(FirebaseContext);
-  const [loading, setLoading] = useState(false);
+  const { auth } = useContext(FirebaseContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
 
-  const canSubmit = /[^@]+@.+/.test(email) && password.length >= 6 && password === repeatPassword;
+  const [handleSubmit, loading] = useAsyncCallback(() => (
+    auth.createUserWithEmailAndPassword(email, password)
+  ));
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      await firebase.auth()
-        .createUserWithEmailAndPassword(email, password);
-    } catch (error) {
-      Alert.alert(error.code, error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const canSubmit = /[^@]+@.+/.test(email)
+    && password.length >= 6
+    && password === repeatPassword;
 
   return (
     <ScrollView>
